@@ -3,6 +3,7 @@ import json
 import sys
 import socket
 from datetime import datetime
+import pylogbeat
 from pylogbeat import PyLogBeatClient
 import logging
 
@@ -77,20 +78,18 @@ def status_handler(runner_config, data):
                 # pass in a list of tuple, with the
                 # strategies you are looking to apply
                 # to each type.
-                [
-                    (list, ["append"]),
-                    (dict, ["merge"]),
-                    (set, ["union"])
-                ],
+                [(list, ["append"]), (dict, ["merge"]), (set, ["union"])],
                 # next, choose the fallback strategies,
                 # applied to all other types:
                 ["override"],
                 # finally, choose the strategies in
                 # the case where the types conflict:
-                ["use_existing"]
+                ["use_existing"],
             )
 
-            message = custom_merger.merge(plugin_config["runner_beats_custom_fields"], message)
+            message = custom_merger.merge(
+                plugin_config["runner_beats_custom_fields"], message
+            )
 
         try:
             if os.environ.get("RUNNER_BEATS_TIMEDOUT") != "true":
@@ -108,9 +107,13 @@ def status_handler(runner_config, data):
                 f"Connection to {plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']} timed out!\n{e}",
                 file=sys.stderr,
             )
-        except ConnectionResetError as e:
+        except (
+            ConnectionResetError,
+            pylogbeat.ConnectionException,
+        ) as e:
             print(
-                f"{e} ({plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']})"
+                f"{e} ({plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']})",
+                file=sys.stderr,
             )
     else:
         logger.info("Beats Plugin Skipped")
