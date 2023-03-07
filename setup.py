@@ -9,7 +9,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="ansible-runner-beats",
-    version="1.0.1",
+    version="1.0.3",
     author="Claranet",
     url="https://github.com/claranet/ansible-runner-beats",
     license="MPL2",
