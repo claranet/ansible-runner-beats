@@ -76,7 +76,7 @@ def status_handler(runner_config, data):
         and plugin_config["runner_beats_port"] is not None
     ):
         message = {
-            "@timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S"),
+            "@timestamp": datetime.now(datetime.UTC).strftime("%Y-%m-%dT%H:%M:%S"),
             "type": "ansible-runner",
         }
         # raise Exception(plugin_config["runner_beats_custom_fields"])
