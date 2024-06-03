@@ -61,9 +61,9 @@ def get_configuration(runner_config):
 def status_handler(runner_config, data):
     plugin_config = get_configuration(runner_config)
 
-    def print_error(error, message):
+    def log_error(error, message):
         prefix = "ERROR: "
-        print(
+        logger.error(
             f"{prefix}Connection to {plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']} {message}!\n",
             f"{prefix}Please check if the beats server is running and reachable.\n",
             f"{prefix}Skipping beats plugin for the rest of the run.\n",
@@ -114,13 +114,13 @@ def status_handler(runner_config, data):
                 )
         except (TimeoutError, socket.timeout) as e:
             os.environ["RUNNER_BEATS_TIMEDOUT"] = "true"
-            print_error(e, "timed out")
+            log_error(e, "timed out")
         except (
             ConnectionResetError,
             ConnectionRefusedError,
             pylogbeat.ConnectionException,
         ) as e:
-            print_error(e, "refused")
+            log_error(e, "refused")
     else:
         logger.info("Beats Plugin Skipped")
 
