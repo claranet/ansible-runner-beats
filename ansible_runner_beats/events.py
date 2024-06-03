@@ -107,6 +107,12 @@ def status_handler(runner_config, data):
                 f"Connection to {plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']} timed out!\n{e}",
                 file=sys.stderr,
             )
+        except ConnectionRefusedError as e:
+            os.environ["RUNNER_BEATS_TIMEDOUT"] = "true"
+            print(
+                f"Connection to {plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']} refused!\n{e}",
+                file=sys.stderr,
+            )
         except (
             ConnectionResetError,
             pylogbeat.ConnectionException,
