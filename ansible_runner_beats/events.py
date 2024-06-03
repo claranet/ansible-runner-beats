@@ -60,6 +60,17 @@ def get_configuration(runner_config):
 
 def status_handler(runner_config, data):
     plugin_config = get_configuration(runner_config)
+
+    def print_error(error, message):
+        prefix = "ERROR: "
+        print(
+            f"{prefix}Connection to {plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']} {message}!\n",
+            f"{prefix}Please check if the beats server is running and reachable.\n",
+            f"{prefix}Skipping beats plugin for the rest of the run.\n",
+            str(error),
+            file=sys.stderr,
+        )
+
     if (
         plugin_config["runner_beats_host"] is not None
         and plugin_config["runner_beats_port"] is not None
@@ -103,16 +114,10 @@ def status_handler(runner_config, data):
                 )
         except (TimeoutError, socket.timeout) as e:
             os.environ["RUNNER_BEATS_TIMEDOUT"] = "true"
-            print(
-                f"Connection to {plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']} timed out!\n{e}",
-                file=sys.stderr,
-            )
+            print_error(e, "timed out")
         except ConnectionRefusedError as e:
             os.environ["RUNNER_BEATS_TIMEDOUT"] = "true"
-            print(
-                f"Connection to {plugin_config['runner_beats_host']}:{plugin_config['runner_beats_port']} refused!\n{e}",
-                file=sys.stderr,
-            )
+            print_error(e, "refused")
         except (
             ConnectionResetError,
             pylogbeat.ConnectionException,
