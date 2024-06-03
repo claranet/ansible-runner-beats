@@ -4,12 +4,12 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as f:
     long_description = f.read()
 
-with open('requirements.txt') as f:
+with open("requirements.txt") as f:
     required = f.read().splitlines()
 
 setup(
     name="ansible-runner-beats",
-    version="1.0.3",
+    version="1.0.4",
     author="Claranet",
     url="https://github.com/claranet/ansible-runner-beats",
     license="MPL2",
